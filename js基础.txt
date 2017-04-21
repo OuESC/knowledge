@@ -278,8 +278,7 @@
 21.内置对象
 	 //说出4个常用的内置对象，说出至少5个方法
 
-    //Math
-        //Math.max  Math.min  Math.ceil Math.floor Math.round
+    //Math        //Math.max  Math.min  Math.ceil Math.floor Math.round Math.pow Math.abs Math.PI
 
     //Date
         //date.getFullYear date.getMonth  date.getDay date.getDate

@@ -1,0 +1,638 @@
+1.angularjs 就是一个框架，增强了 html 的功能，更容易构建一个复杂的web应用
+
+2.使用场景：特别适合用来开发，增删改查，这种dom操作频繁的应用，如果一个页面中 指令 超过2000个，就有可能会影响到angular的性能
+
+3.ng不推荐开发人员操作dom，但是底层还是dom操作(这是框架完成的)，
+	如果想要操作dom，也是在某一个指定的地方操作(这个位置也是框架规定好的，自定义指令)
+
+4. 单页应用程序
+	就是：整个web应用只有一个页面，只有第一次请求才会把整个页面获取到，之后就是请求json数据，然后解析json数据并进行展示
+
+	优势：无刷新加载页面，避免了不必要的跳转和重复渲染
+		  更好的用户体验，让用户在web app 感受native app 的速度和流畅
+		  减少了请求体积，节省流量，加快页面响应速度
+		  可以选择性的保留状态，如音乐网站，切换页面时不会停止播放歌曲
+
+    如何实现：ajax、hash锚点、hashchange
+    spa(单页应用程序)的基本演示：
+    <style>
+        div {
+            height: 500px;
+            width: 100%;
+            background-color: hotpink;
+        }
+    </style>
+	<body>
+	    <ul>
+	        <li><a href="#/find">发现音乐</a></li>
+	        <li><a href="#/my">我的音乐</a></li>
+	        <li><a href="#/friend">朋友推荐</a></li>
+	    </ul>
+	    <div id="content">
+	        <!--内容显示区域-->
+	    </div>
+
+	    <script>
+	        //单页应用程序实现：ajax、hash、hashchange
+	        var content = document.getElementById("content");
+	        //给window注册hashchange事件
+	        window.addEventListener('hashchange',function(){
+	            var hash = location.hash ;
+	            //从控制台可以看到hash值就是 #find #my #friend
+	            switch(hash) {
+	                case '#/find' :
+	                    content.innerHTML = '发现音乐' ;
+	                    break ;
+	                case '#/my' :
+	                    content.innerHTML = '我的音乐' ;
+	                    break ;
+	                case '#/friend' :
+	                    content.innerHTML = '朋友推荐' ;
+	                    break ;
+	            }
+	        })
+	    </script>
+	</body>
+
+5.angular中的指令介绍
+	指令：就是html元素中的一个自定义属性(也就是其他形式的指令)，不同的指令对应了不同的功能
+	作用：就是用来给当前的html添加一些额外的行为，增强html的能力
+
+6.指令的分类：ECMA
+	E：element 元素指令
+	C：class 类指令
+	M：comment 注释指令
+	A：arttibute 属性指令 (使用频率最高)
+
+7.angular属性指令的前缀形式
+	ng- , data-ng- , ng: , x-ng- ;
+
+8.ng-app 
+	作用：用来告诉angular管理的范围，只要是具有ng-app指令的标签内部，都收到angular的管理
+
+9.ng-model
+	作用：用来在数据模型(数据仓库)中创建一个属性。
+		  能够添加ng-model的元素就是：表单元素；用于input select textarea中
+		  ng-model指令操作的就是表单元素的value属性
+
+10.ng-click
+	作用：用来绑定angular中提供的单机事件，他的值是一个：表达式；
+	实例：<button ng-click = 'num = (num -0) + 1'>+1</button> 
+
+11.ng-checked
+	作用：单向的数据绑定，只能够将数据的变化同步到页面中
+
+12.angularjs的基本使用
+	1,引入angular的js文件
+	2，指定一个ng-app指令
+	3，思想：白不要考虑dom操作，只考虑我要做什么事情(结果)
+
+13.表达式的区别
+	js中的表达式：能够作为 方法的参数，就是一个表达式。特点：有值
+	angular中的表达式：与js中的表达式 功能基本相同，但是有细微的区别，在js中使用的表达式，几乎全部可以用在angular中
+	语法：{{}} 也叫 插值表达式
+	作用：输出 表达式 的值
+
+
+14.ng-controller 指令
+	用来指定当前模块中的一个控制器，由控制器来具体管理。
+	每个控制器都对应了一个独立的数据模型，多个控制器之间的数据模型是不会相互影响的
+	实例：一个模块中包含多个控制器，每个控制器都是独立的，可以单独去管理内部的内容，不会相互影响
+	var app = angular.module('myApp',[]);
+	app.controller('firstController',['$scope',function($scope){
+		console.log('这是第一个控制器')；
+	}])
+	app.controller('secondController',['$scope',function($scope){
+		console.log('这是第二个控制器') ；
+	}])
+
+
+15.创建模块：module
+	注意：在同一个页面中创建多个模块是没有实际意义的，但是确实可以这么做，angular在获取到第一个 ng-app 之后，就不在继续查找
+		  所以在一个页面中，默认情况下，只能有一个模块
+		  如果需要有多个，后续的需要调用angular.bootstrap 方法来手动引导
+
+	实例：<div ng-app = 'myApp' ng-controller = 'FController'>
+				<h1>{{ name }}</h1>
+		  </div>
+		  <div ng-controller = 'SController' id = 'dv'>
+		  		<h1>{{ name }}</h1>
+		  </div>
+		  //引入angularjs文件
+		  <script src = '../node_modules/angular/angular.js'></script>
+		  <script>
+		  	angular.module('myApp',[])
+		  			.controller('FController',['$scope',function($scope){
+		  				$scope.name = '小明' ;
+		  			}])
+
+  			angular.module('demoApp',[])
+  					.controller('SController',['$scope',function($scope){
+  						$scope.name = '小王' ;
+  					}]);
+  					var dv = document.getElementById('dv') ;
+  					//手动引导一个模块:angular.bootstrap();方法第一个是id值，第二个是一个数组参数
+  					angular.bootstrap(dv,['demoApp']) ;
+		  </script>
+
+16.初始化指令：ng-init
+	实例：ng-init = 'name = '小迷妹''
+
+
+17.MVC模式的介绍
+	MVC开发模式，不属于设计模式
+	三大组成部分：M：model 数据 --> 提供数据
+				  V：view 视图 --> 页面结构
+				  C：controller 控制器 --> 在 数据 和 视图 之间起到了桥梁的作用，控制器中有所有的业务逻辑
+
+
+    ## MVC 与 MVVM
+		- 优势：代码分离（视图代码、控制器代码），职责分离，解耦
+		- 目的：解决应用程序展示结构、业务逻辑之间的紧耦合关系，实现模块化和复用
+		- 提高了代码的结构和可维护性，但是不会提高代码执行的效率
+
+		### MVC介绍
+		```
+		MVC（Model–view–controller）是一种软件架构模式，
+		把软件系统分为三个基本部分：模型（Model）、视图（View）和控制器（Controller）。
+
+		MVC是一种应用程序的设计思想（不是设计模式）
+		```
+
+		- Model 进行数据的存储和数据的处理方法（CRUD）
+		- View 展示数据
+		    + 在Angluar中，View指的是在页面中被 `ng-app` 指令包裹的HTML代码
+		- Controller 是应用程序中处理用户交互的部分
+		    + 通常控制器负责从视图读取数据，控制用户输入，并向模型发送数据，是数据和视图的桥梁
+
+		```
+		例如：移动端和PC端两个View，共享同一个Model
+		在MVC设计模式中， Model 响应用户请求并返回响应数据，
+		View 负责格式化数据并把它们呈现给用户，业务逻辑和表示层分离，
+		同一个 Model 可以被不同的 View 重用，所以大大提高了代码的可重用性。
+		```
+
+		### MVVM
+		- 是由 MVC 模式演变出来的！
+		- 组成：
+
+		```
+		M: model 模型，相当于 User（构造函数）
+		V: view 视图， ng-app 管理的页面
+		VM: ViewModel 视图模型 在Angular中就是：$scope
+		```
+
+		#### ViewModel
+		- 1 $scope实际就是MVVM模式中的VM（视图模型）
+		- 2 Angular中大量的使用$scope, 盖过了C（控制器）的概念，所以很多人将其称为MVVM框架
+		- 3 不要深究到底是什么类型（MVC/MVVM），重要的是学会使用。
+		- 4 `MVW` ===> "Model View Whatever"
+		- 5 MVVM 首先出现在 微软的WPF 中
+
+
+
+18.## 数据绑定方式
+	### 双向数据绑定
+		- 一般通过 `ng-model` 指令实现
+		- 概述：
+		```
+		数据模型的值发生改变，就会导致页面值的改变；页面值的改变，也会导致数据模型中值的改变，
+		这种相互影响的关系就是双向数据绑定。
+		```
+
+		### 单向数据绑定
+		- 一般通过 `{{}}` 表达式来实现
+		- 概述：数据模型的值发生改变，导致页面的值发生改变
+
+
+19.localStorage的基本使用
+	window.localStorage.getItem(keyname); 读取，参数类型：string
+	window.localStorage.setItem(keyname,keyvalue);设置，参数类型：string
+	  //用户注册的方法
+        Person.prototype.reg = function() {
+            //先获取本地数据：字符串格式
+            var userListStr = window.localStorage.getItem('userinfo') ;
+            //获取到本地用户数据：要进行判断 字符串格式转为对象
+            var list = JSON.parse(userListStr || []) ;
+            //这里调用用户是否存在的方法
+            if(!this.checkUser(list)){
+                //存在
+                return false ;
+            }
+            //可以进行注册
+            list.push({userName:this.userName,pwd:this.pwd});
+            //存储数据：localStorage 只能存储字符串，存储的时候还要转换
+            localStorage.setItem('userinfo',JSON.stringify(list));
+            return true ;
+        }
+
+
+20. $watch 监视数据的变化
+	1.监视 基本类型 的变化
+		$watch:注意：这个$watch方法，页面加载完成的时候，会自动调用一次;
+					 条件成立说明是第一次执行，直接return，因为数据还没有变化，代码执行也没有实际意义
+				第一个参数：表示要监视的数据，这个数据必须是 $scope 中的数据: 所以是 $scope.$watch()					处理数据的时候，也要带上$scope
+				基本语法：
+				$scope.$watch('name',function(newValue,oldValue){
+					//newValue 表示当前值
+					//oldValue 表示变化之前的值
+					//第一次执行
+					if(newValue === oldValue) {
+						return ;
+					}
+					if(newValue.length < 6) {
+						$scope.msg = '用户名不少于6位'
+					}else {
+						$scope.msg = '' ;
+					}
+				})
+	2.监视 对象类型 的变化
+		如果要监视 对象类型 的数据变化，需要传入第三方参数：true
+		基本语法：
+		$scope.$watch('name',function(newValue,oldValue){
+			if(newValue === oldValue) {
+				return ;
+			}
+			console.log(newValue) ;
+		},true)
+
+21.在 ng 中使用 jQuery
+	如果想在ng中使用jquery功能，可以通过调用 angular.element = $ 
+	在页面中引入了jquery就可以使用完整的jquery的功能
+	如果没有引入，那就用内置的jqLite轻量级的jquery
+	//ng中通过angular.element可以获取到jquery 
+	但是，其实获取的是内置的轻量级的jqLite，所以他的功能没有jquery强大
+	//这个angular.element 获取元素只能接受 DOM对象 参数
+
+	实例：var $ = angular.element ;
+		  $(document).ready(function(){
+		  	var $btn = $('button') ;
+            $btn.on('click',function(){
+                $(this).css('color','red') ;
+            })
+		  })
+
+22.控制器的创建方式
+	1.推断式：angular.module('testApp',[])
+					.controller('TestController',function($scope){});
+			   //这种写法的坏处：$scope 必须这么写，否则报错
+                //angular中控制器的参数，是通过一个叫做：依赖注入 的机制放进来的
+                //所以，$scope 必须叫这个名字，因为在ng内部，就是通过这个$scope来查找相应的对象
+                //因为程序上线前，需要代码压缩才能发布，此时代码压缩后，$scope 会被替换成一个简短的字母，这样就会导致 ng 出错
+
+    2.安全方式(主要是这种)：angular.module('testApp',[])
+    					.controller('TestController',['$scope',function($scope){}])
+				//第一个参数：表示控制器的名称
+				//第二个参数：是一个数组，除了最后一个参数是一个回调函数以外，其他所有的参数，都是字符串，
+							  每一个字符串与回调函数中的形参相对应
+
+  	3.面向对象方式：了解即可
+
+
+23.页面闪烁的原因
+	1.因为代码是从上而下解析执行的
+	2.因为一开始angular的文件还没被加载，所以 {{ name }} 就是一个普通的字符串
+	3.执行angular代码，然后解析页面中的{{ name }}
+	4.因为解析的过程是需要消耗时间的，所以，我们看到了闪烁
+
+	解决方式：
+	1.将 js 文件写在 head 中引入 ( 不好 ) 
+	2.使用 ng-bind 代替 {{ name }} 表达式
+			ng-bind 作用：相当于js中的 innerText/textContent 用来设置当前元素的文本内容
+			注意：如果当前元素中已经存在内容，那么会被清空，然后重置为新内容
+		示例：<h1 ng-bind = 'name'>aaaaaa</h1> ---> 使用ng-bind方法的时候，在标签内的aaaaa是不会被解析的，
+													只会解析ng-bind等于的那个值
+	3.ng-cloak
+		angular 在处理页面的时候，会做一下处理，移除 ng-cloak 类
+		示例：<p class = 'ng-cloak'>{{ name }}</p>  <p ng-cloak>{{ name }}</p>
+			  <style>
+			  	  .ng-cloak ,[ng-cloak] {
+			  	  		display:none;
+			  	  }
+
+			  </style>
+
+
+24.ng-bind：只能处理文本内容，无法解析html标签元素
+   ng-bind-html指令：用来处理html内容。
+   使用 ng-bind-html 处于安全性考虑 要结合angular-sanitize.js的文件
+   示例：<div ng-bind-html = 'str'></div>
+   		 <script src = 'angular-sanitize.js'></script>
+   		 angular.module('myApp',['ngSanitize']) ---> 这里要把ngSanitize 作为依赖模块引入
+   		 		.controller('MyController',['$scope',function($scope){$scope.str = '<h1>你好</h1>'}])
+
+25.ng-repeat指令
+	1.用来重复生成一段html结构，能够遍历对象或者数组；
+	2.在哪一个元素上使用，就会重复生成哪个元素;
+
+		示例：下面两种形式都可以：一个是写了表达式的，一个是用ng-bind代替了表达式的
+		<li ng-repeat = 'item in list' ng-bind = 'item'></li>
+		<li ng-repeat = 'item in list'>{{ item }}</li>
+
+	3.第二种方式：<p ng-repeat = '(k,v) in userInfo'>{{ k + ':' + v }}</p>
+		解析：k 就是对象的 键
+			  v 就是对象的 值
+	    示例：<script src="../node_modules/angular/angular.js"></script>
+	    	  <script>
+	    	  	 angular.module('myApp',[])
+	    	  	 		.controller('TextController',['$scope',function($scope){
+	    	  	 			//$scope.list = ['吃饭'，'睡觉']；这个是用 item in list
+	    	  	 			$scope.userInfo = {
+	    	  	 				name : 'zs',
+	    	  	 				age : 18
+	    	  	 			}
+	    	  	 		}])
+	    	  </script>
+
+	4.ng-repeat 中的属性说明
+		item：当前的值 ；
+		$index：当前值的索引号，唯一
+		$first：当前项是不是第一个元素，是返回true，不是返回false
+		$last：当前项是不是最后一个元素，是返回true，不是返回false
+		$middle：当前项是不是中间项，是返回true，不是返回false
+		$even：当前项是不是偶数项，是返回true，不是返回false
+		$odd：当前项是不是奇数项，是返回true，不是返回false
+
+		示例：
+		<style>
+			.redStyle {color: red}
+			.greenStyle {color:green}
+		</style>
+		<p ng-repeat = 'item in list' class = '{{ $odd ? redStyle : greenStyle}}'>{{ item }},{{ $odd }}</p>
+	  	angular.module('myApp',[])
+	  		.controller('TextController',['$scope',function($scope){
+	  			$scope.list = ['吃饭'，'睡觉'，'学习'] ；
+	  			$scope.redStyle = 'redStyle' ;
+	  			$scope.greenStyle = 'greenStyle' ;
+	  		}])
+
+	5.ng-repeat = 'item in list' 只能处理数据中没有重复的内容；如果内容有重复，这样写会报错，需要单独处理
+	  ng-repeat = 'item in list track by $index' ; ----> 处理重复的内容，重复的也会打印出来
+	  因为$index 在每一个遍历中，当前值都不相同，只要track by 后面跟着的是唯一的就可以，
+	  那么自己写的随机数fn也是可以的，不一定非要是$index
+	  track by 的目的：就是为了让dom元素具有唯一的标识，angular就可以通过这个唯一的标识来确定每一个dom对象
+
+  	6.ng-repeat指令：可以形成一个作用域，作用域中保存了跟当前遍历对象相关的内容，比如：$index item $odd
+  	  实例：<div ng-controller="TestController">
+        
+		        <p ng-repeat="item in list" class="{{$odd?'redStyle':'greenStyle'}}">{{item}}</p>
+
+		        <p ng-bind="list[1]"></p>
+		        <p>{{item}}</p>
+		        <h2>{{list[0]}}</h2>
+		    </div>
+		    <script src="../node_modules/angular/angular.js"></script>
+		    <script>
+		        angular.module('myApp',[])
+		                .controller('TestController',['$scope',function($scope){
+		                    $scope.list = ['吃饭', '睡觉'];
+		                }])
+		    </script>
+
+
+26. ng-class 指令
+		用来控制元素的类，让我们更加灵活的操作类
+		实例：
+		<style>
+			.redClass {font-size: 100px;} 
+		</style>
+		<p ng-class = 'type'>{{ name }}</p>
+			  angular.controller('TextController',['$scope',function($scope){
+			  		$scope.name = '小米';
+			  		$scope.type = 'redClass'
+			  }])
+	ng-class指令：操作的就是元素的 class 属性，就是要给当前元素添加类
+				  ng-class 的值可以是一个对象：对象的键：表示类名(对应css中耳朵一个类)
+				  							   对象的值：是一个布尔值，如果值为true，表示添加类，false表示不添加
+				  实例一：<p ng-class = '{redClass : true , blueClass : false }'>{{ item }}</p>
+				  实例二：
+				  <style>
+				  	.redClass {font-size:50px}
+				  	.greenClass {color:blue}
+				  </style>
+				  <p ng-repeat = 'item in list' ng-class = '{redClass:$odd,greenClass:$even}'>{{ item }}</p>
+				  angular.module('myApp',[])
+				  		.controller('TestController',['$scope',function($scope){
+				  			$scope.list = ['吃饭'，'睡觉'];
+				  		}])
+
+	ng-class 的几种情况
+		 	ng-class 增强了 HTML 元素的 class 属性
+    			  给当前DOM元素添加样式（class）
+		    ng-class="{cls: true}"
+		    		对象的属性：'cls'，会成为类名
+		     		对象的值： true，控制是否添加当前类
+
+		    ng-class="cls"
+		    		此时的cls应该是 $scope 中的一个属性
+
+		    ng-class=" 'cls' " 此时的 'cls' 就是一个字符串类名
+
+
+27. 其他指令的说明
+	ng-hide：如果值为true，表示隐藏该元素；angular 会自动给当前元素添加一个类 ng-hide
+	ng-show：如果值为true，让当前元素显示；不管事ng-show还是ng-hide都要在页面结构中创建该元素
+	ng-if：也是用来展示或隐藏元素，但如果是隐藏，那么页面结构也不存在
+	ng-switch： 与 js 中的 switch-case 功能相似；ng-switch-when的值只有与 ng-switch 绑定的数据(name) 							  相同了，那么当前项才会展示，否则是不展示的
+	ng-checked：是一个单向的数据绑定：ng-checked = 'isChecked'
+	ng-model = 'isChecked' ; 这个是双向绑定的，数据和页面会相互关联
+	实例：
+	<input ng-model = 'name'> //就是说这个input输入框里面绑定的name要与我下面ng-switch-when写的东西一致页面中才会显示
+	<div ng-switch = 'name'>
+		<div ng-switch-when = 'jack'>我是jack</div>
+		<div ng-switch-when = 'rose'>我是rose</div>
+		<div ng-switch-when = 'tom'>我是tom</div>
+	</div>
+
+
+28.补充概念说明
+	1.angular 不希望我们直接使用全局对象，如果使用，也要通过 angular 提供的方式来使用
+		原因：框架主导一切，使用全局对象，这些代码不受angular控制，会造成一些不必要的bug
+
+	2.ng-bind 和 {{}} 有啥区别？
+		ng-bind 操作的是：innerText / textContent ，
+		ng-bind 会把当前元素的内容清空掉，而 {{}} 只会把表达式的内容进行替换
+
+	3.angular 中通过双向绑定的机制，实现数据和页面内容的交互
+	  当数据发生变化时，会同步到页面内容，当页面内容发生改变，也会同步到数据
+	  所以我们要实现某个效果，只需要操作数据就可以了
+	  然后，页面中对应的内容就会自动发生(同步)变化
+
+29.angular 中的过滤器说明
+	currency 货币过滤器：第一个参数就是货币符号，第二个参数表示保留两位小数
+		1.<p>{{1234.5672 | currency : '$' : 2}}</p>
+	date 日期过滤器
+		2.<p>{{148888 | date: 'yyyy-MM-dd Z'}}</p>
+	json 过滤器:4 是首行缩进，默认值是2
+		3.<pre>{{{'name':'value'} | json : 4}}</pre>
+	lowercase 过滤器:转化成小写
+		4.<pre>{{'ABCDE' | lowercase }}</pre>
+	uppercase 过滤器：转化成大写
+		5.<pre>{{'acfhak' | uppercase}}</pre>
+	limitTo 过滤器：限制10个字，排除前三个开始
+		6.<pre>{{'今天天气真好,蓝天和白云' | limitTo : 10 : 3}}</pre>
+	number 过滤器：保留两位小数
+		7.<pre>{{1234.5678 | number : 2}}</pre>
+
+30.angular 中两个重点过滤器
+	1.orderBy:'name';以名字的字母先后顺序排序
+	  orderBy:'age';以年龄大小顺序
+	  实例：
+	  	<p ng-repeat = 'item in friends | orderBy : 'name' '>{{item.age + '-' + item.name}}</p>
+	  	angular.module('myApp',[])
+	  			.controller('MyController',['$scope',function($scope){
+	  				$scope.friends = [
+	  					{name:'mary',age:18},
+	  					{name:'john',age:33},
+	  					{name:'alion',age:23}
+	  				]
+	  			}])
+	  	//orderBy : 'name' 结果就是以名字字母的顺序打印的
+
+  	2.filter 过滤器
+  		实例：
+  			//searchText 会进行全部匹配，也就是遍历对象的所有属性的值 ，进行匹配
+  			<input type="text" ng-model="searchText"/>
+  			//filter :会去匹配isCompleted属性的值，你输入什么，页面就显示什么
+  			<p ng-repeat = 'item in friends | filter : {isCompleted:searchText}'>{{ item.name + '-' + item.isCompleted}}</p>
+  			angular.module('filterApp',[])
+            		.controller('FilterController',['$scope',function($scope){
+			                $scope.searchText = '' ;
+			                $scope.friends = [
+			                    {id: 1, name: '抽烟', isCompleted: false},
+			                    {id: 2, name: '喝酒 false', isCompleted: true},
+			                    {id: 3, name: '汤头', isCompleted: false}
+			                ];
+            		}]);
+
+31.angular 中的服务说明
+	服务：语法：跟创建控制器的语法相同
+				模块.service('服务名称',['其他服务1','其他服务2',function(其他服务1，其他服务2){}]);
+		  1.创建服务，仅仅是在angular创建了一个服务，但是只有这个服务被调用的时候，服务中的代码才会执行并且只会执行一次
+		  2.服务中提供的回调函数，会被当成一个 构造函数 来使用
+		  3.所以，如果想要给服务对象提供内容，在其他控制器或者模块中调用，需要通过给 this 添加属性即可
+		  4.控制器中引入服务模块，实现调用
+
+    服务：就是把一些重复的操作封装到一个服务中，如果其他地方(控制器)想要使用这个功能，只需要将服务注入到当前的控制器中
+    		这样就可以使用服务中的功能了。
+    	  一般情况下，服务是一个单独的模块，如果其他模块想使用这个服务的功能：
+    	  1.将服务模块作为依赖，加载到其他模块中
+    	  2.将服务注入到控制器中
+
+    实例：模块 - 服务 - 控制器(引入服务，调用)
+    	  angular.module('myApp',[])
+    	  		.service('TestService',[function Srv(){
+    	  			this.say = function() {console.log('服务模块的代码执行了')}
+    	  		}])
+    	  		.controller('MyController',['$scope','TestService',function($scope,TestService){
+    	  			console.log('控制器中的代码执行了') ;
+    	  			console.log(TestService) ;
+    	  			//调用
+    	  			TestService.say() ;
+    	  		}])
+
+
+	实例二：服务模块 与 控制器模块分离
+			创建服务模块：服务模块如果不调用，也是不展示的，所以要创建主模块去引用
+				(function(angular){
+					//testApp.srvModule 表示testApp模块的子模块
+					angular.module('testApp.srvModule',[])
+							//TestSrv ---> 服务名称
+							.service('TestSrv',[function(){
+								this.name = '当前模块是：testApp.srvModule'
+							}])
+				})(angular)
+			创建主模块：要指定依赖模块：testApp.srvModule 来调用
+				(function(angular){
+					angular.module('testApp',['testApp.srvModule'])
+							//控制器与服务模块分离，服务模块要想执行，必须在控制器中引入 TestSrv 这个服务名称
+							.controller('TestController',['$scope','TestSrv',function($scope,TestSrv){
+								console.log(TestSrv.name);
+            					$scope.str = TestSrv.name;
+							}])
+				})(angular)
+			最后在html页面中引入这些单独的js文件
+
+
+
+
+32. angular 中的路由介绍
+	因为angular 一般处理的就是SPA(单页应用程序)，只有一个页面，
+	但是，我们的页面可能是复杂的，所以，需要通过URL中的hash来区分不同的请求，然后展示不同的内容
+	angular 提供了一个路由机制，作用就是：根据不同的hash值，来展示不同的内容
+	示例：index.html#/active ; index.html#/ ; index.html#/completed ;
+		  解析：路由中就可以根据不同的hash值来处理不同	的请求，开发人员可以通过ng中提供的路由机制，来配置自己的路由，然		后就能够区分出不同的请求，并且展示不同的内容
+
+    1.使用路由，可以不设置ng-controller;但是要设置 ng-view : 这个指令是用来展示不同路由对应的功能
+    2.引入angular-route.js文件
+    3.angular.module('myApp',['ngRoute']) ---> 将路由作为依赖项引入
+    4.通过.config(['$routeProvider',function($routeProvider){--->//$routeProvider 就是用来提供路由功能的服务
+    			$routeProvider.when('/stu/li',{
+    				//template:'<div>这是李四的内容</div>'
+    				templateUrl:'tpl',
+    				controller:'TestController'
+    			})
+   		   }])
+
+    5.上面是写死的方式，下面这个可以根据传入的hash去改变
+    	 angular.module('routeApp',['ngRoute']) ---> 依赖路由
+                .controller('TestController',['$scope','$routeParams',function($scope,$routeParams){
+                	//$routeParams 服务 ，用来获取到路由参数
+                    //这个值是一个对象
+                    var para = $routeParams.name ; --> 获取到传入的hash值
+                    //数据
+                    var userList = {
+                        zhangsan:{name:'zs',age:18},
+                        lisi:{name:'ls',age:19},
+                        ww:{name:'wang',age:20}
+                    };
+
+                    $scope.userName = userList[para].name ;
+                    $scope.userAge = userList[para].age;
+                }])
+                .config(['$routeProvider', function ($routeProvider) {
+                    $routeProvider
+                            .when('/stu/:name?',{ ----> 这里用 :name? 表示可传可不传
+                                templateUrl:'./views/user.html',
+                                controller:'TestController'
+                            })
+                            .otherwise({ ---> 如果上面都匹配不了，默认跳到ww这个页面
+                                redirectTo:'/stu/ww'
+                            })
+                }])
+
+
+
+
+20.angular 代码开始
+	angularjs 是完全遵守 模块化开发 的，所以我们需要先创建一个模块，所有的内容，都是依赖于模块
+
+	<body ng-app = 'myApp' ng-controller = 'FirstController'>
+	<input type = 'text' ng-model = 'name'>
+	<h1>{{ name }}</h1>
+	<div>{{ age }}</div>
+	<div>我今年：{{age}}</div>
+	<button ng-click = 'fn()'>age</button>
+
+	//引入angularjs文件
+	<script src = '../node_modules/angular/angular.js'></script>
+
+	//创建模块：第一个参数：模块的名称；第二个参数：表示当前模块的依赖模块
+	//名称的约定：以大写字母开头，然后以 controller 结尾
+	angular.module('myApp',[])
+
+		//创建控制器：所有的业务逻辑都由 控制器 完成。第一个参数：当前控制器的名称；第二个参数：用来执行控制器的代码逻辑
+			.controller('FirstController',['$scope',function($scope){
+			//业务逻辑全部都放到这个回调函数当中；
+				//控制器提供了一个对象：$scope : 相当于当前模块的数据模型，是一个对象；
+				//$scope 的作用：在数据与html结构之间起到了桥梁的作用
+
+				//如果指定了模块以及控制器，那么通过ng-model 或者 {{}} 查找属性的时候，都是到$scope这个对象中进行查找的
+
+				$scope.name = '小明' ;
+				$scope.age = 19 ;
+				$scope.fn = function() {
+					$scope.age++ ;
+				}
+
+			}])

@@ -1,0 +1,274 @@
+1.node 是什么？
+	node 是一个 构建于 chrome v8 引擎之上的 一个 js 运行环境；node 可以用来解析和执行 js 代码
+	node 使用 事件驱动、非阻塞IO模型(异步编程)使得他非常的轻量级和高效；
+	node中的 NPM 是世界上最大的开源生态系统
+	node不同于浏览器，不再关心GUI图形界面，专注于数据处理。
+	node 没有操作BOM DOM 之类的API了
+
+2.node 的特点
+	事件驱动、非阻塞IO模型(异步编程模型)、单线程、跨平台
+
+3.node 的应用场景
+	构建server 服务端
+	网站服务器
+	游戏服务器
+	API Server 
+
+	node 虽然可以用来构建服务器，但是他更专注于：实时通信。
+	例如：聊天通信软件、直播平台、游戏等数据交互频繁的业务系统
+
+3.使用 nvm 安装和管理 Node	
+	nvm ls 查看安装了几个版本的node
+	nvm use 版本号  切换到另一个版本号的node
+	node-v  查看当前使用的版本号
+
+4.node REPL
+	就是开发者工具中的控制台
+	R：read 读取
+	E：Eval 求值计算
+	P：print 输出计算结果
+	L：Loop 进入下一次循环
+	说白了就是开发者工具中的控制台；REPL 的作用就是帮助开发者可以做一些快捷的 API 测试
+
+5.node中的js
+	ECMAScript : 基本语法：var、if、else、for、function
+				 基础的API：Date、Math
+    定时器对象：
+	setTimeout clearTimeout
+	setInterval clearInterval 
+	console 对象
+
+6.内置核心模块简介
+	模块名称        模块作用
+	fs              文件操作，例如读写文件
+	http            构建http 服务
+	os              获取操作系统相关信息
+	path            处理文件路径
+	querystring     解析处理 URL 中的查询字符串
+	url             解析处理 URL
+
+7.node 除了基本的ECMAScript 语法之外，基本上所有的API 都被放到了一个模块中了
+  node 内置了很多模块，例如操作文件的 fs、构建http 服务的 http 
+  如果要使用这些模块，都通过 require(string) 加载对应的内置模块，才可以使用其中的 API
+
+
+8. node的同步加载：这个用的不多，一般都是异步加载
+	//1.通过 require()函数加载 fs 模块 (注意：fs 是 node 内置的核心模块标识)
+		var fs = require('fs') ;
+		setTimeout(function(){
+		   //2.通过 fs 的readFileSync() 读取指定的文件，返回值就是读到的文件内容
+		    var data = fs.readFileSync('./data/a.txt');
+		   //3.默认读取到的文件内容是二进制数据
+		   //这里可以通过 toString()方法将二进制数据转换为我们自己能识别的普通字符
+		    console.log(data.toString());
+		},3000)
+
+	//2.同步写入文件writeFileSync() ;
+		实例：fs.writeFileSync('./data/b.txt','开心') ;
+		解析：第一个参数：指定要写入文件的路径
+						  如果不存在，会自动创建，如果存在，会覆盖
+			  第二个参数：指定要写入文件的内容数据
+
+
+9.异步操作请求 
+	同步操作会阻塞后续代码的执行：如果在某一个任务中读取了一个 1g 大小的文件，则后续操作都必须等到前面
+								  处理完毕才能继续执行，所以尽量少用同步操作文件的方式
+
+    异步 API 执行方式类似于ajax，不会阻塞后续代码的继续执行，异步 API 是并行的，可以同时多件事，哪个先完成
+    则先执行哪个，所以异步 API 是无法保证执行顺序的，所以后面跟一个回调函数
+
+    1.实例：var fs = require('fs') ;
+    	  fs.readFile('./data/a.txt',function(err,data){
+    	  	if(err) {
+    	  		return console.log('文件读取失败') ;
+    	  	}
+    	  		console.log('读取文件成功') ;
+    	  })
+
+  	复制某个文件，要先读取这个文件，然后再写入另外一个文件路径中去
+  	2.实例：var fs = require('fs') ;
+  		  fs.readFile('./data/a.txt',function(err,data){
+  		  	if(err) {throw err ;} ---> //如果有错，则通过throw err 跑出异常，则程序终止，也不需要return了
+        								//这样可以快速定位错误
+
+		  //writeFile 第二个参数支持直接传入一个普通的字符串或者二进制数据,
+		  //如果是普通的字符串，在进行写入文件时还会自动转为二进制数据再写入文件
+		  fs.writeFile('./data/c.txt',data,function(err){
+			if(err) {throw err ;}
+			console.log('复制文件成功') ;
+		  	})
+  		  })
+
+    3.封装一个复制文件的函数：第一个参数：复制文件的路径，第二个参数：写入文件的路径
+	      var fs = require('fs') ;
+	      //封装函数
+	      function copy(srcPath,distPath,callback) {
+	      	//先读取
+	      	fs.readFile(srcPath,function(err,data){
+	      		if(err) {
+	      			//当发生错误的时候，调用callback 由上层 API 调用者去处理这个异常
+	      			return callback(err) ;
+	      		}
+	  		//再写入
+	  		fs.writeFile(distPath,data,function(err){
+	  			if(err) {
+	  				return callback(err) ;
+	  			}
+	  			callback() ;
+	  		})
+	      	})
+	      }
+
+  	//调用这个函数
+  		copy('./data/aa.txt','./data/b.txt',function(err){
+  			if(err){
+  				//如果复制失败，则记录一条错误日志信息到文件中
+  				var err_log = '错误发生时间：' + new Date() + '错误信息:' + err.message 
+  				//如果是错误的，就写入错误日志
+  				return fs.writeFile('./data/log.txt',err_log,function(err){
+  					console.log('记录错误日志成功') ;
+  				})
+  			}
+  			console.log('复制文件成功了') ;
+  		})
+
+
+10.创建目录：
+		fs.mkdir('./data/a',function(err){
+			if(err) {
+				throw err ;
+			}
+			console.log('创建目录成功');//这里生成了一个a文件夹
+		})
+
+	读取目录的内容：fs.readdir() ;
+	//读取data文件夹下所有的文件
+		fs.readdir('./data/',function(err,result){
+			if(err) {
+				throw err ;
+			}
+			console.log(result); //fs.readdir();读取了data文件夹下所有的文件
+		})
+
+11.创建 http 服务
+	var http = require('http');
+	var server = http.createServer();  //1.创建服务器，得到一个服务器实例对象
+	server.on('request',function(){ --->//2.接受请求：通过监听 server 实例对象的 request 请求事件
+		console.log('收到客户端请求了');
+	})
+	server.listen(8080,function(){ --->//3.绑定端口号，启动服务器
+		console.log('服务器启动成功，可以访问了')
+	})
+	服务器无非就是三件事：接受请求，处理请求，发送响应，
+	BS 交互模型：一问一答：请求和响应，没有请求就没有响应
+
+12.	http-response
+	var http = require('http') ;
+	var server = http.createServer() ;
+	//一切对该服务的请求都会触发这个 request 请求事件，然后分配给一个单独的回调处理函数去处理
+	//在回调函数中，需要接受两个参数：
+		//request:当前客户端请求对象
+				//请求对象可以用来获取当前客户端的一些请求数据，例如请求路径、请求方法等信息
+		//response：响应请求
+				//响应对象可以给当前客户端发送响应数据
+
+	server.on('request',function(req,res){
+		res.write('hello') ;
+		res.write('world') ;
+		//在 write 之后一定要记得：结束响应，也就是挂断电话
+		res.end() ;
+	})
+	server.listen(3000,function(){
+		console.log('服务启动成功，可以访问了');
+	})
+
+13.	http-url
+	var http = require('http');
+	var server = http.createServer();
+	server.on('request',function(req,res){
+		var url = req.url ;
+		if(url === '/') { 
+		//res.write('home page')
+        //res.end() ;
+        //两句可以写一句
+			res.end('home page') ;
+		}else if(url === '/login') {
+			res.end('login page') ;
+		}else {
+			res.end('404 Not Found') ;
+		}
+	})
+	server.listen(3000,function(){
+		console.log('Server is running at port 3000')
+	})
+
+14. http-file
+	var http = require('http') ;
+	var fs = require('fs') ;
+	var server = http.createServer()
+
+	server.on('request',function(req,res){
+		var url = req.url ;
+		if(url === '/') {
+			fs.readFile('./data/index.html',function(err,data){
+				if(err) {
+					throw err ;
+				}
+				//如果发送的数据需要进一步处理，则需要转为字符串去处理
+				//如果不需要做二进制处理，则可以直接把这个二进制数据响应给客户端
+				//而且即便传递的是一个字符串，也会转为二进制数据再发送
+				res.end(data);
+			})
+		}else if(url === '/login') {
+			fs.readFile('./data/login.html',function(err,data){
+				if(err) {
+					throw err ;
+				}
+				res.end(data) ;
+			})
+		}else {
+			fs.readFile('./data/404.html',function(err,data){
+				if(err) {
+					throw err ;
+				}
+				res.end(data) ;
+			})
+		}
+	})
+	server.listen(3000,function(){
+		console.log('Server is running at port 3000');
+	})
+
+15.fs-markeddown-watchFile
+	需求：监视 markdown 格式的文件，当文件内容发生变化，转成 HTML 格式字符串写入到新的文件
+	1.npm install marked ;在js文件中require('marked')引入；
+	2.监视md文件的变化(必须在md文件里有变化才会转html)，转成html格式
+		var mdPath = './README.md'
+		fs.watchFile(mdPath,{
+			interval:500
+		},function(curr,prev){
+			2. 当文件发生变化的时候
+				2.1 读取源文件
+				2.2 将源 markdown 格式字符串转为 HTML 格式字符串
+				2.3 将转出来的 HTML 格式字符串写入到文件中
+			fs.readFile(mdPath,function(err,data){
+				if(err){throw err}
+				data = data.toString()
+				fs.writeFile('./README.html',marked(data),function(err){
+					if(err){
+						throw err
+					}
+					console.log('成功')
+				})
+			})
+		})
+		// watchFile 接收三个参数：
+		//  第一个参数：要监视的文件
+		//  第二个参数：可选参数
+		//              可选参数是一个对象，可以用来配置监视间隔时间：
+		//              { interval: 时间 }
+		//  第三方参数：文件发生变化之后的回调处理函数
+		//        该回调处理函数接收两个参数：current prev
+		//        这两个可以获取到当前文件和上一次发生变化之前的一些状态数据
+
+16.

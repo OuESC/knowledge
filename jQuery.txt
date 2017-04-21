@@ -1,0 +1,385 @@
+# jQ让js的开发更加简单，jQ解决了浏览器的兼容性问题，要求会使用jQ设计常见的效果，掌握jQ的思想设计与理念。学习的知识：jQ的基本概念、选择器、DOM操作、动画、事件以及fullpage等的拓展！！！
+
+
+	## 1.为什么学习jQ:入口函数只能有一个(window.onload)，出现多个后面的会覆盖前面的 ;
+					代码容错性差，容易出错，出错导致后面的代码不执行
+					存在浏览器兼容性问题
+					DOM操作复杂，实现简单的动画很麻烦
+
+	## 2.什么是jQ：就是一个js库，使用jQ的话会比使用js更简单。
+				js库：把一些常用的方法写到一个单独的js文件中，使用的时候直接去引用这个js文件就可以了
+
+	## 3.怎样使用jQ：引包、入口函数、功能实现这三个步骤；
+				  引入jQ包，入口函数两种写法：$(document).ready(function(){代码块})；
+				  							  $(function(){}) ;
+				  功能实现就是去执行要实现的功能代码了
+
+    ## 4.jQ版本：大版本分为1.x和2.x和3.x；2和3不再支持IE678，在中国最多使用1
+     			未压缩版本jquery.js:适合开发，代码可读性高，开发和学习使用
+     			压缩版本jquery.min.js:在生产环境使用
+
+	## 5.js入口函数window.onload() 和jQ的入口函数的执行时机对比
+	  	js的入口函数要等到页面中的所有资源(包括图片、文件)加载完成才开始执行
+	  	jQ的入口函数只会等待文档树加载完成就开始执行，并不会等待图片、文件的加载
+
+  	## 6.$符号：就是一个函数，$()参数不一样，功能就不一样
+  	  			比如：$(function(){})//参数是function，说明是入口函数
+  	  				  $('#btn')//参数是以#开头的字符串，是标签选择器，查找id是btn的元素
+  	  				  $('div')查找所有的div元素
+  	  				  $(document).ready(function(){})//将document转化为jQ对象
+
+  	  				  $ === jQuery 就是说能用$符号的完全可以用jQuery，$仅仅是简写形式
+
+	## 7.DOM对象(js对象)：只可以使用dom对象的方法和属性
+		  jQuery对象：jQ对象只能使用jquery对象的方法，jq对象其实就是DOM对象的包装集(包装了DOM对象的集合(伪数组))
+
+		  ## 两者之间的联系：jq对象就是一个伪数组，里面装了很多的dom对象；jq对象里面有很多的方法，这些方法就是用来操作里面的对象的
+		  ## 两者之间的方法不能相互调用，如果要用，要先将jq对象转换成dom对象；或者将dom对象转换成jq对象；
+
+		  DOM对象 与 jq对象 的相互转换：jq转DOM：var $li = $('li') ; 第一种方法：$li[0] ; 第二种方法：$li.get(0) ;//这是jq对象转成dom对象的	
+		  								DOM转jq：var $obj = $(domObj) ; $(document).ready(function(){}) ;就是典型的DOM对象转jq对象
+		  										 var cloth = document.getElementById('cloth');-->转换jq对象：$cloth.text('hahaaha');
+
+	## 8.jQ选择器：jQ选择器返回的是jQuery对象。jQ选择器有很多，基本兼容了css1到css3所有的选择器，并且jQ还添加了很多复杂的选择器
+
+
+	## 9.基本选择器：ID选择器：指定id的元素：$('#btn');
+				  类选择器：获取同一类class的元素:$('.btn');
+				  标签选择器：获取同一类标签的所有元素：$('div');
+				  并集选择器：使用逗号分隔，只要符合条件之一即可：$('p,div,li');
+				  交集选择器：获取class为redClass的div元素，注意区分后代选择器：$('div.redClass');
+
+	  层级选择器：子代选择器：使用>号，获取儿子层级的元素，并不会获取孙子层级的元素：$('ul > li')
+	  			  后代选择器：使用空格，代表后代选择器，获取ul下的所有li元素，包括孙子等：$(ul li);
+
+	  上面的基本选择器和层级选择器基本上和css选择器一模一样
+
+	  过滤选择器：这类选择器都带冒号：
+	  			  :eq(index);$('li:eq(2)').css('color','red');获取到的li元素中，索引号为2，index是从0开始
+	  			  :odd; $('li:odd').css('color','red');获取到的li元素中，索引号为奇数的li元素
+	  			  :even；$('li:even').css('color','red');获取到的li元素中，索引号为奇数的li元素
+		  	上面的方法也可以简写成：$('li').eq(2);$('li').even;
+
+		  	$(selector).index();index方法也是//index方法获取的当前元素在他所有兄弟元素里面的索引。
+
+  	  筛选选择器：与过滤选择器基本类似，但是用法不一样，筛选主要是方法
+  	 			  children(selector); $('ul').children('li');相当于$('ul>li');子代选择器
+  	 			  find(selector); $('ul').find('li');相当于$('ul li');后代选择器
+  	 			  siblings(selector); $('#first').siblings('li'); 查找兄弟节点，不包括自己本身
+  	 			  parent(); $('#first').parent(); 查找父亲
+  	 			  eq(index); $('li').eq(2) ;相当于$('li:eq(2)');
+  	 			  next(); $('li').next(); 找下一个兄弟
+  	 			  prev(); $('li').prev(); 找上一次兄弟
+  	 			  preveAll(); 获取前面所有的兄弟
+  	 			  nextAll(); 获取后面所有的兄弟
+
+
+    ## 10.jQ操作样式
+    	css操作：设置或者修改样式，操作的是style属性。
+    			 设置单个样式：$('btn').css('color','gray');
+    			 设置多个样式：参数是一个对象。$('btn').css({'color':'gray','width':'400px','height':'200px'});
+    			 获取样式：$('div').css('color'); 注意：获取样式操作只会返回第一个元素对应的样式值
+
+		class操作：添加样式类addclass('name')：$('div').addClass('one');
+				   移除样式类removeClass('name'): $('div').removeClass('one');
+				   判断是否有样式类：hasclass('name'); $('div').hasclass('one'); 		判断第一个div是否有one的样式类，返回值是true或者false
+				   切换样式类：toggleClass('name'): $('div').toggleClass('one');  one是需要切换的样式类名，如果有就移除该样式，没有就添加该样式
+
+	    隐式迭代：1.设置操作的时候，如果是多个元素，那么就给所有的元素设置相同的值；
+	    		  2.获取操作的时候，如果是多个元素，那么只会返回第一个元素的值。
+
+
+    ## 11.jQ操作DOM
+    	1.jQ动画：jQ提供了三组基本动画，这些动画都是标准的、有规律的效果，jQ还提供了自定义动画的功能(animate).
+
+    	## 三组基本动画
+    		1.显示(show)与隐藏(hide)是一组动画。
+    			show(speed,callback);  //speed可选：动画的执行时间。不传速度，可以显示，但没有动画效果；毫秒值1000就是一秒；固定字符串:show(200)/										normal(400)/fast(600);如果传其他参数，则默认为normal
+    									callback(可选)：执行完动画后执行的回调函数。
+    					可选就是两个参数都可以不写，但是speed不写就没有动画效果，一般都是回调不写。
+    					hide与show的方法完全一致。她俩修改的是元素的width、height、opacity。
+    					//切换toggle();
+
+			2.滑入(slideUp)与滑出(slideDown)：效果与卷帘门类似，使用的方法基本上与show和hide一致。
+											  但是speed不传，默认是normal；是有动画效果的
+				  //滑入与滑出切换：$(selector).slideToggle(speed,callback);//如果是隐藏状态，执行slideDown(显示效果)操作，显示状态执行slideUp操作。
+				  她俩修改的是元素的  height  下拉菜单案例
+
+		    3.淡入(fadeIn)与淡出(fadeOut):使用方法与上面两个类似。不传参数，默认也是normal；也具有动画效果
+		    	  //淡入淡出切换：fadeToggle(speed,callback);  隐藏：就fadeIn操作；显示：fadeOut操作
+		    	  修改的元素的 opacity
+
+    	    这三种方法修改的元素的值，都是带数字的，因为带了数字才能做渐变。
+
+
+	    ## 自定义动画
+	    	animate:自定义动画
+	    		$(selector).animate({params},speed,callback);
+	    		{params}:要执行的动画的css属性，带数字(必选)；
+	    		speed: 执行的动画时长(可选)
+	    		callback：动画执行完后立即执行的回调函数
+
+	    		easing参数：控制动画在不同元素的速度，默认为'swing'。
+	    					swing：在开头和结尾移动慢，中间速度快，
+	    					linear：匀速移动
+
+				动画队列问题：在同一个元素上执行多个动画，那么对于动画来说后面的动画会被放到动画队列中，等前面的动画执行完了才会执行。(二级菜单案例)
+
+				## 停止动画：
+					stop(clearQueue,jumpToEnd);//第一个参数：是否清除队列；第二个参数：是否跳转到最终结果
+					最常用的停止动画：stop();
+
+
+		2.jQ操作DOM节点
+			## 创建元素：$(htmlStr); htmlStr:html格式的字符串 
+						 $('<span>这是一个span元素</span>')
+
+			## 添加元素：添加新建的元素：方法一：将jQ对象添加到调用者内部的最后面
+												var $span = $('<span>这是新建的元素</span>')
+												$('div').append($span);
+
+										  方法二：参数传字符串，会自动创建成jQ对象
+										  		$('div').append('<span>把创建的元素作参数传进来直接添加</span>')
+
+				  		  添加已经存在的元素：var $p = $('p'); $('div').append($p);
+				  		  		//注意：如果添加的是已经存在的元素，那么会把之前的元素给干掉(相当于剪切的功能)；
+
+
+		  		  		   //append:添加到子元素的最后面
+			               //prepend:添加到子元素的最前面
+			              //after:添加到调用者的后面，作为兄弟元素
+			              //before:添加到调用者的前面，作为兄弟元素
+			              //$("#box").append($(".outer"));
+			              //$(".outer").appendTo($("#box"))
+
+	  		## 使用html创建元素
+	  			设置内容：$('div').html('<span>这是一段内容</span>') ；
+	  			获取内容：$('div').html();
+
+
+  			## 清空元素
+  				empty:清空指定节点的所有元素，自身保留(清理门户)
+  						$('div').empty();//清空div的所有内容(推荐使用，会清空子元素上绑定的内容)
+
+				html(''):使用html方法来清空元素，不推荐使用，会造成内存泄漏，绑定的事件不会被清除
+						$('div').html('');
+
+			## 删除元素
+				remove();相比于empty，自身也删除(自杀)
+					$('div').remove();
+
+			## 克隆元素:复制匹配的元素 js:cloneNode(true);  jQ:$(selector).clone();
+
+
+
+	## 12.jQ操作属性(重点)
+		##操作常用属性
+			设置单个属性：attr('name','value');//name:需要设置的属性名；value：对应的属性值
+						  $('img').attr('title','相册')；
+
+			设置多个属性：参数是一个对象，包含了需要设置的属性名和属性值attr(obj);
+						  $('img').attr({'title':'哈哈'，'alt':'嘻嘻'})；
+
+		    获取属性：attr('name');  $('img').attr('title');
+		    		  注意：1.获取属性，只会获取到第一个元素对应的属性，与css方法一样
+		    		  		2.获取属性，如果该属性不存在，那么会返回undefined；
+
+	  		移除属性：removeAttr('name'); //需要移除的属性名，如果传空，那么不会有任何操作，注意，并不是移除所有的属性，区分removeClass
+	  				  $('img').removeAttr('title');
+
+
+		    ## 注意：对于checked、selected、disabled这类boolean类型的属性来说，就要使用prop方法来设置和获取属性了，使用和attr一样，但是获取属性的返回值是true和false；
+		    		 //设置属性：$(':checked').prop('checked',true);
+		    		 //获取属性：$(':checked').prop('checked');//返回true或者false
+
+
+	## 13.jQ操作值和内容
+		## val方法：用于设置和获取表单元素的值。例如input、select、textarea的值
+			//设置值：$('#name').val('张三')；
+			//获取值：$('#name').val();
+
+		## html方法
+			//设置内容：$('div').html('<span>这是一段内容</span>');
+			//获取内容：$('div').html();
+
+		## text方法
+			//设置内容：$('div').text('<span>这是一段内容</span>')
+			//获取内容：$('div').text();
+
+		html 与 text 方法的区别：html方法会识别html标签，text方法会把内容当成字符串，并不会识别标签
+
+
+	## 14.jQ操作尺寸
+		## height：设置或者获取高度
+			//带参数表示设置高度：$('img').height(200);
+			//不带参数表示获取高度：$('img').height();
+			//返回值是number类型(比如200)，而使用$('img').css('width');返回的就是字符串(200px)
+
+		## width：设置或者获取宽度，与height用法一样
+
+		## scrollTop: 设置或者获取垂直滚动条的位置
+			//有参数表示设置偏移，参数为数值类型
+				$(selector).scrollTop(100);
+			//无参数表示获取偏移
+				$(selector).scrollTop();
+
+		## scrollLeft：设置或者获取水平滚动条的位置
+			//有参数表示设置偏移，参数为数值类型
+				$(selector).scrollLeft(100);
+			//无参数表示获取偏移
+				$(selector).scrollLeft();
+
+
+	## 15.jQ 事件机制(重点)
+			jQ对js事件进行了封装，增加并扩展了事件处理机制。jQ不仅提供了更加优雅的事件处理语法，而且极大的增强了事件的处理能力
+
+			## jQ 事件的发展历程
+				简单绑定事件-->bind绑定事件-->delegate事件绑定-->on事件绑定
+				简单事件绑定：click/mouseenter鼠标进入事件/mouseleave鼠标离开事件/scroll滚动事件
+							  缺点：一次只能绑定一个事件
+
+			    bind事件：不支持动态创建出来的元素绑定事件，jQ1.7版本之后被on取代
+
+			    delegate事件：支持动态创建元素的绑定，因为事件绑定在父元素身上，事件冒泡机制，由子元素触发
+
+			    on事件绑定:最现代的方式，兼容zepto(移动端，类似js的一个库)，推荐使用
+			    	语法：	$(selector).on(events,selector,data,handler);
+			    	events:绑定事件的名称可以是由空格分隔的多个事件(标准事件或者自定义事件)
+			    	selector：执行事件的后代元素(可选)，如果没有后代元素，那么事件将有自己执行
+			    	data：传递给处理函数的数据，事件触发的时候通过event.data来使用(不常使用)
+			    	handler：事件处理函数
+
+		    		$(selector).on('click','span',function(){});//表示给$(selector)绑定代理事件，必须是他内部元素span才能触发这个事件，支持动态绑定:父元素绑定事件
+
+		    		$(selector).on('click',function(){});//表示给$(selector)绑定事件，并由自己触发，不支持动态绑定(不使用代理)；
+
+    		## 事件解绑
+    			unbind()方式 和 undelegate()方式；不用
+    				$(selector).unbind();//解绑所有的事件
+    				$(selector).undelegate()//解绑所有的事件
+    				$(selector).unbind('click');//解绑指定的事件
+    				$(selector).undelegate('click');//解绑指定的事件
+
+				# off方式解绑(重点)
+					$(selector).off();//解绑匹配元素的所有事件
+					$(selector).off('click');//解绑匹配元素的所有click事件
+					$(selector).off('click','**');//解绑所有代理**的click事件，元素本身的事件不会被解绑
+
+
+			## 事件触发
+				简单事件触发：$(selector).click();
+
+				trigger方法触发事件
+					$(selector).trigger('click');
+
+					triggerHandler 触发事件响应方法，不触发浏览器行为：比如：文本框获得焦点的默认行为
+								$(selector).triggerHandler('focus');
+
+
+	## 16.链式编程
+		原理：return this ；
+		一般情况下，只有设置操作的时候才能把链式编程延续下去，因为获取操作的时候会返回获取到的相应的值，无法返回 this
+
+		 	//对于设置性操作来说，是可以链式下去的，因为设置性操作本来是不用返回东西的。
+            //jq返回了一个jq对象，目的就是可以继续链式编程。
+
+            //对于获取行操作，本来就有返回值，这个返回值可能是字符串，也可能是数值，
+            // 这个时候就不能链式了。
+
+            console.log($("div").width(200).height(200).css("backgroundColor", "red").width());
+
+		## 隐式迭代
+			在方法的内部会为匹配到的所有元素进行循环遍历执行相应的方法，而不用我们再进行循环，简化我们的操作，方便我们的调用。
+			如果获取的是多元素的值，大部分情况下会返回第一个元素的值；设置性操作的时候，设置的是所有的元素；获取性操作的时候，获取的是第一个元素的值
+
+
+	## 17.each 方法
+		有了隐式迭代，为什么还要用each函数遍历？
+		大部分情况下是不需要使用each方法的，因为jQ的隐式迭代性；如果对每个元素进行不同的处理，就要用到each方法了
+
+		作用：遍历jQ对象集合，为每一个匹配的元素执行一个函数
+				//参数一表示当前元素在所有匹配元素中的索引号
+				//参数二表示当前元素(DOM对象)
+				$(selector).each(function(index,element){});
+				//也可以下面这样写
+				// 第一个参数：表示要遍历的对象
+				// 第二个参数：表示回调函数，对遍历对象中的每一项元素都会调用函数
+				$.each(selector,function(index,element){}) ;
+
+
+	## 18.  //a标签的默认行为就是页面跳转
+            //其实就是组织了浏览器的默认行为
+            $("a").click(function (e) {
+                //alert("haha");
+                //return false;
+                e.preventDefault();//阻止默认跳转
+            })
+
+
+	## 18.多库共存
+		<script>
+	        console.log($);
+	        //释放掉$的控制权
+	        var d = $.noConflict();//释放掉控制权：noConflict()
+	        console.log($);//$ === jQuery
+	        d(function () {
+	            d("div").width(200).height(200).css("backgroundColor","cyan");
+	        });
+    	</script>
+
+
+
+	## 19.案例分析
+		1.手风琴：
+		$('.groupTitle').click(function(){
+				$(this).next().slideDown(200).parent().siblings().children('div').slideUp(200);
+			})//就是利用各种关系去实现的效果
+
+		2.小火箭返航案例：
+			css:<div class="actGotop"><a href="javascript:;" title="Top"></a></div>
+			js:<script src="jquery-1.12.4.js"></script>
+				<script>
+					$(window).scroll(function(){
+						if($(window).scrollTop() >= 500) {
+							$('.actGotop').stop().fadeIn(1000) ;
+						}else {
+							$('.actGotop').stop().fadeOut(1000) ;
+						};
+
+						$('.actGotop').click(function(){						
+							 //改变页面被卷去的高度（渐渐的变）
+							$('body,html').stop().animate({'scrollTop':'0px'},2000) ;
+						})
+					})
+				</script>
+
+		3.五角星评分案例
+			 $(function () {
+            //1. 给所有的li注册鼠标进入事件
+            // 让当前li和前面所有的li都变成实心的，后面的li变成空心的
+
+            //如果是筛选选择器，特点：获取父亲孩子，兄弟
+            $(".comment>li").on("mouseenter",function () {
+
+
+                //个人推荐：分开写
+                $(this).text("★").prevAll().text("★").end().nextAll().text("☆");
+            });
+
+
+            //2. 离开ul的时候，让所有的li都变成空心的
+            $(".comment").on("mouseleave", function () {
+                $(this).find("li").text("☆");
+
+                //把点击的那个li和前面所有的li变成实心
+                $("li.current").text("★").prevAll().text("★");
+            });
+
+
+            //3. 给li注册点击事件，标记点击的那个li
+            $(".comment>li").on("click", function () {
+                $(this).addClass("current").siblings().removeClass("current");
+            });
+        });
+
+        4.jQuery 插件的使用，可以看一下实例，然后去做，不必要去死记属性和方法，百度就可以。加油。
